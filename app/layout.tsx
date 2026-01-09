@@ -15,8 +15,15 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ProHack Journal",
-  description: "A modern tech blog template built with Next.js App Router.",
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  ),
+  title: {
+    default: "ProHack Journal",
+    template: "%s | ProHack Journal",
+  },
+  description:
+    "実務で使える設計・UI・パフォーマンスの知見をまとめた技術ブログ。",
 };
 
 export default function RootLayout({

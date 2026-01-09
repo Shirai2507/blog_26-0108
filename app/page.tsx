@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import {
@@ -208,3 +209,8 @@ export default async function Home({ searchParams }: HomeProps) {
     </PageLayout>
   );
 }
+
+export const metadata: Metadata = {
+  title: "トップ",
+  description: "最新の記事と検索・カテゴリの一覧を表示します。",
+};
