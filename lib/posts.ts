@@ -14,6 +14,11 @@ export type CategoryCount = {
   count: number;
 };
 
+export type PostSearchItem = {
+  meta: PostMeta;
+  bodyText: string;
+};
+
 type ParsedPost = {
   meta: PostMeta;
   content: string;
@@ -76,6 +81,18 @@ function parseFrontmatter(fileContent: string, fileSlug: string): ParsedPost {
   return { meta, content };
 }
 
+function markdownToPlainText(markdown: string): string {
+  let text = markdown;
+  text = text.replace(/```[\s\S]*?```/g, " ");
+  text = text.replace(/`[^`]*`/g, " ");
+  text = text.replace(/!\[[^\]]*\]\([^)]+\)/g, " ");
+  text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1");
+  text = text.replace(/<[^>]+>/g, " ");
+  text = text.replace(/[#>*_~`]/g, " ");
+  text = text.replace(/\s+/g, " ").trim();
+  return text;
+}
+
 export function getAllPosts(): PostMeta[] {
   if (!fs.existsSync(postsDirectory)) {
     return [];
@@ -102,6 +119,38 @@ export function getAllPosts(): PostMeta[] {
 
   return posts.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+}
+
+export function getAllPostsWithBodyText(): PostSearchItem[] {
+  if (!fs.existsSync(postsDirectory)) {
+    return [];
+  }
+
+  const fileNames = fs
+    .readdirSync(postsDirectory)
+    .filter((file) => file.endsWith(".md"));
+
+  const posts = fileNames.map((fileName) => {
+    const fullPath = path.join(postsDirectory, fileName);
+    const fileContents = fs.readFileSync(fullPath, "utf8");
+    const fileSlug = path.parse(fileName).name;
+    const { meta, content } = parseFrontmatter(fileContents, fileSlug);
+
+    for (const field of requiredFields) {
+      if (!meta[field]) {
+        meta[field] = field === "slug" ? fileSlug : "";
+      }
+    }
+
+    return {
+      meta,
+      bodyText: markdownToPlainText(content),
+    };
+  });
+
+  return posts.sort(
+    (a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime()
   );
 }
 

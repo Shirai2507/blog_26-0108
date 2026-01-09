@@ -1,12 +1,17 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatDate, getAllPosts, getCategoryCounts } from "../lib/posts";
+import {
+  formatDate,
+  getAllPostsWithBodyText,
+  getCategoryCounts,
+} from "../lib/posts";
 import PageLayout from "./components/PageLayout";
 
 type HomeProps = {
   searchParams?: Promise<{
     page?: string | string[];
     category?: string | string[];
+    q?: string | string[];
   }>;
 };
 
@@ -23,16 +28,29 @@ function getPageNumber(value?: string): number {
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const posts = getAllPosts();
+  const posts = getAllPostsWithBodyText();
   const categories = getCategoryCounts();
   const resolvedParams = (await searchParams) ?? {};
   const categoryParam = getParamValue(resolvedParams.category);
-  const filteredPosts = categoryParam
+  const searchQuery = getParamValue(resolvedParams.q)?.trim();
+  const normalizedQuery = searchQuery?.toLowerCase();
+
+  const filteredByCategory = categoryParam
     ? posts.filter(
         (post) =>
-          post.category.toLowerCase() === categoryParam.toLowerCase()
+          post.meta.category.toLowerCase() === categoryParam.toLowerCase()
       )
     : posts;
+
+  const filteredPosts = normalizedQuery
+    ? filteredByCategory.filter((post) => {
+        const haystack = `${post.meta.title} ${post.meta.description} ${
+          post.bodyText
+        }`.toLowerCase();
+        return haystack.includes(normalizedQuery);
+      })
+    : filteredByCategory;
+
   const postsPerPage = 6;
   const totalPages = Math.max(
     1,
@@ -45,6 +63,9 @@ export default async function Home({ searchParams }: HomeProps) {
     const params = new URLSearchParams();
     if (categoryParam) {
       params.set("category", categoryParam);
+    }
+    if (searchQuery) {
+      params.set("q", searchQuery);
     }
     params.set("page", String(clampedPage));
     redirect(`/?${params.toString()}`);
@@ -61,15 +82,28 @@ export default async function Home({ searchParams }: HomeProps) {
     if (categoryParam) {
       params.set("category", categoryParam);
     }
+    if (searchQuery) {
+      params.set("q", searchQuery);
+    }
     params.set("page", String(page));
     return `/?${params.toString()}`;
   };
+
+  const clearCategoryHref = (() => {
+    if (!searchQuery) {
+      return "/";
+    }
+    const params = new URLSearchParams();
+    params.set("q", searchQuery);
+    return `/?${params.toString()}`;
+  })();
 
   return (
     <PageLayout
       categories={categories}
       activeCategory={categoryParam}
-      clearCategoryHref="/"
+      clearCategoryHref={clearCategoryHref}
+      searchQuery={searchQuery}
     >
       <div className="space-y-10">
         <section className="space-y-4">
@@ -77,62 +111,59 @@ export default async function Home({ searchParams }: HomeProps) {
             2026 Modern Tech Blog
           </p>
           <h1 className="text-3xl font-semibold tracking-tight text-slate-900 md:text-4xl">
-            開発現場で役立つ実装ノート
+            Editorial notes on practical engineering.
           </h1>
           <p className="max-w-2xl text-lg leading-8 text-slate-600">
-            プロジェクトで再利用できる設計、PHPとNext.jsの橋渡し、
-            パフォーマンス改善の知見をまとめていきます。
+            Focused write-ups on building product interfaces with clear
+            architecture, sensible typography, and stable performance.
           </p>
         </section>
 
         <section className="space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <h2 className="text-xl font-semibold text-slate-900">最新記事</h2>
-            <div className="flex flex-wrap gap-3">
-              <input
-                type="text"
-                placeholder="記事を検索"
-                className="w-48 rounded-full border border-slate-200 px-4 py-2 text-sm text-slate-600 focus:border-slate-400 focus:outline-none"
-              />
-              <button className="rounded-full bg-slate-900 px-4 py-2 text-sm text-white">
-                検索
-              </button>
-            </div>
+            <h2 className="text-xl font-semibold text-slate-900">
+              Latest posts
+            </h2>
           </div>
 
           <div className="space-y-5">
-            {paginatedPosts.length == 0 ? (
+            {paginatedPosts.length === 0 ? (
               <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-sm text-slate-500">
-                ???????????
+                <p className="text-sm font-semibold text-slate-700">
+                  No results found.
+                </p>
+                <p className="mt-2 text-xs text-slate-500">
+                  Try a different keyword or clear the active filters.
+                </p>
               </div>
             ) : (
               paginatedPosts.map((post) => (
                 <article
-                  key={post.title}
+                  key={post.meta.title}
                   className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
                 >
                   <div className="flex items-center gap-3 text-xs text-slate-500">
-                    <span>{formatDate(post.date)}</span>
+                    <span>{formatDate(post.meta.date)}</span>
                     <span className="rounded-full border border-slate-200 px-2 py-0.5">
-                      {post.category}
+                      {post.meta.category}
                     </span>
                   </div>
                   <h3 className="mt-3 text-xl font-semibold text-slate-900">
                     <Link
-                      href={`/posts/${post.slug}`}
+                      href={`/posts/${post.meta.slug}`}
                       className="transition hover:text-slate-700"
                     >
-                      {post.title}
+                      {post.meta.title}
                     </Link>
                   </h3>
                   <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {post.description}
+                    {post.meta.description}
                   </p>
                   <Link
-                    href={`/posts/${post.slug}`}
+                    href={`/posts/${post.meta.slug}`}
                     className="mt-4 inline-flex text-sm font-semibold text-slate-900"
                   >
-                    ????? ?
+                    Read more ?
                   </Link>
                 </article>
               ))

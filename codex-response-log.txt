@@ -79,3 +79,6 @@
 
 期待する結果: PHP カテゴリのサンプル記事が増え、/?category=PHP&page=2 でページ2が確認できる。
 確認作業: /?category=PHP&page=2 で記事一覧が切り替わるか確認してほしい。
+
+期待する結果: サイドバー上部に検索ボックスが表示され、title/description/body を対象に検索できる。?q=... がURLに保持され、category と q を両方指定した場合はANDで絞り込まれる。
+確認作業: サイドバーの検索から /?q=next で検索結果が出るか、/?category=PHP&q=next でAND検索が動くか、ゼロ件の場合に案内UIが出るか確認してほしい。

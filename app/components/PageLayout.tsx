@@ -9,6 +9,7 @@ type PageLayoutProps = {
   categories?: CategoryCount[];
   activeCategory?: string;
   clearCategoryHref?: string;
+  searchQuery?: string;
 };
 
 export default function PageLayout({
@@ -17,6 +18,7 @@ export default function PageLayout({
   categories,
   activeCategory,
   clearCategoryHref,
+  searchQuery,
 }: PageLayoutProps) {
   return (
     <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-10 lg:px-6">
@@ -27,6 +29,7 @@ export default function PageLayout({
           categories={categories}
           activeCategory={activeCategory}
           clearCategoryHref={clearCategoryHref}
+          searchQuery={searchQuery}
         />
       </div>
       <CodeCopy />
