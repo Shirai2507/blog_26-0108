@@ -103,3 +103,6 @@
 
 期待する結果: 各ページのmetadata（タイトルテンプレート、description）が設定され、記事詳細にOGPの最低限が追加される。/sitemap.xml と /robots.txt が出力され、記事詳細の読みやすさが見出し・段落・リスト・引用で整う。
 確認作業: /、/about、/admin、/posts/スラッグ のタイトルとdescriptionが反映されるか、記事詳細の見出し・リスト・引用の読みやすさが改善されているか、/sitemap.xml と /robots.txt が出力されるか確認してほしい。
+
+期待する結果: AGENTS.md のログにPhase 6〜11の作業が追記される。
+確認作業: AGENTS.md でPhase 6〜11が記録されているか確認してほしい。

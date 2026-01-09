@@ -9,6 +9,12 @@
 - Implemented Phase 3 post detail route and minimal markdown rendering.
 - Implemented Phase 4 TOC generation, heading anchors, and sidebar TOC highlighting.
 - Implemented Phase 5 code block rendering with Shiki, filename bars, and copy button support.
+- Implemented Phase 6 homepage pagination with query params and category-aware links.
+- Implemented Phase 7 category counts, sidebar filters, and clear-category flow.
+- Implemented Phase 8 search with body indexing, query param persistence, and zero-result UI.
+- Implemented Phase 9 content pages (about/admin) via markdown with shared renderer and TOC.
+- Implemented Phase 10 previous/next article cards with stable date/slug ordering.
+- Implemented Phase 11 metadata/OGP, robots/sitemap, and post readability tweaks.
 
 ## Project Structure & Module Organization
 
