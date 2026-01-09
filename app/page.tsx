@@ -1,9 +1,68 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { formatDate, getAllPosts } from "../lib/posts";
 import PageLayout from "./components/PageLayout";
 
-export default function Home() {
+type HomeProps = {
+  searchParams?: Promise<{
+    page?: string | string[];
+    category?: string | string[];
+  }>;
+};
+
+function getParamValue(value?: string | string[]): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  return Array.isArray(value) ? value[0] : value;
+}
+
+function getPageNumber(value?: string): number {
+  const parsed = Number.parseInt(value ?? "1", 10);
+  return Number.isNaN(parsed) ? 1 : parsed;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
   const posts = getAllPosts();
+  const resolvedParams = (await searchParams) ?? {};
+  const categoryParam = getParamValue(resolvedParams.category);
+  const filteredPosts = categoryParam
+    ? posts.filter(
+        (post) =>
+          post.category.toLowerCase() === categoryParam.toLowerCase()
+      )
+    : posts;
+  const postsPerPage = 6;
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredPosts.length / postsPerPage)
+  );
+  const requestedPage = getPageNumber(getParamValue(resolvedParams.page));
+  const clampedPage = Math.min(Math.max(requestedPage, 1), totalPages);
+
+  if (requestedPage !== clampedPage) {
+    const params = new URLSearchParams();
+    if (categoryParam) {
+      params.set("category", categoryParam);
+    }
+    params.set("page", String(clampedPage));
+    redirect(`/?${params.toString()}`);
+  }
+
+  const startIndex = (clampedPage - 1) * postsPerPage;
+  const paginatedPosts = filteredPosts.slice(
+    startIndex,
+    startIndex + postsPerPage
+  );
+
+  const buildPageHref = (page: number) => {
+    const params = new URLSearchParams();
+    if (categoryParam) {
+      params.set("category", categoryParam);
+    }
+    params.set("page", String(page));
+    return `/?${params.toString()}`;
+  };
 
   return (
     <PageLayout>
@@ -37,48 +96,76 @@ export default function Home() {
           </div>
 
           <div className="space-y-5">
-            {posts.map((post) => (
-              <article
-                key={post.title}
-                className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
-              >
-                <div className="flex items-center gap-3 text-xs text-slate-500">
-                  <span>{formatDate(post.date)}</span>
-                  <span className="rounded-full border border-slate-200 px-2 py-0.5">
-                    {post.category}
-                  </span>
-                </div>
-                <h3 className="mt-3 text-xl font-semibold text-slate-900">
+            {paginatedPosts.length == 0 ? (
+              <div className="rounded-3xl border border-dashed border-slate-200 bg-white p-10 text-sm text-slate-500">
+                ???????????
+              </div>
+            ) : (
+              paginatedPosts.map((post) => (
+                <article
+                  key={post.title}
+                  className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:shadow-md"
+                >
+                  <div className="flex items-center gap-3 text-xs text-slate-500">
+                    <span>{formatDate(post.date)}</span>
+                    <span className="rounded-full border border-slate-200 px-2 py-0.5">
+                      {post.category}
+                    </span>
+                  </div>
+                  <h3 className="mt-3 text-xl font-semibold text-slate-900">
+                    <Link
+                      href={`/posts/${post.slug}`}
+                      className="transition hover:text-slate-700"
+                    >
+                      {post.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-slate-600">
+                    {post.description}
+                  </p>
                   <Link
                     href={`/posts/${post.slug}`}
-                    className="transition hover:text-slate-700"
+                    className="mt-4 inline-flex text-sm font-semibold text-slate-900"
                   >
-                    {post.title}
+                    ????? ?
                   </Link>
-                </h3>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {post.description}
-                </p>
-                <Link
-                  href={`/posts/${post.slug}`}
-                  className="mt-4 inline-flex text-sm font-semibold text-slate-900"
-                >
-                  続きを読む →
-                </Link>
-              </article>
-            ))}
+                </article>
+              ))
+            )}
           </div>
 
-          <div className="flex items-center justify-between rounded-full border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
-            <span>1 / 4 ページ</span>
-            <div className="flex gap-2">
-              <button className="rounded-full border border-slate-200 px-3 py-1">
-                前へ
-              </button>
-              <button className="rounded-full border border-slate-200 px-3 py-1">
-                次へ
-              </button>
-            </div>
+          <div className="flex flex-wrap items-center justify-end gap-2 text-sm text-slate-600">
+            {clampedPage > 1 ? (
+              <Link
+                href={buildPageHref(clampedPage - 1)}
+                className="rounded-full border border-slate-200 px-3 py-1 text-slate-700 transition hover:bg-slate-50"
+              >
+                Prev
+              </Link>
+            ) : null}
+            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+              (page) => (
+                <Link
+                  key={page}
+                  href={buildPageHref(page)}
+                  className={`rounded-full px-3 py-1 transition ${
+                    page === clampedPage
+                      ? "bg-slate-900 text-white"
+                      : "border border-slate-200 text-slate-700 hover:bg-slate-50"
+                  }`}
+                >
+                  {page}
+                </Link>
+              )
+            )}
+            {clampedPage < totalPages ? (
+              <Link
+                href={buildPageHref(clampedPage + 1)}
+                className="rounded-full border border-slate-200 px-3 py-1 text-slate-700 transition hover:bg-slate-50"
+              >
+                Next
+              </Link>
+            ) : null}
           </div>
         </section>
       </div>
