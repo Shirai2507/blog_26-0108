@@ -1,26 +1,96 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-slate-200;
+  }
+
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply tracking-tight;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
+
+  a {
+    @apply text-slate-900;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.post-content h2 {
+  @apply mt-10 text-2xl font-semibold text-slate-900;
+}
+
+.post-content h3 {
+  @apply mt-8 text-xl font-semibold text-slate-900;
+}
+
+.post-content p {
+  @apply text-base leading-8 text-slate-700;
+}
+
+.post-content pre {
+  @apply m-0;
+}
+
+.post-content :not(pre) > code {
+  @apply rounded bg-slate-100 px-1.5 py-0.5 text-[0.9em] text-slate-900;
+}
+
+.post-content pre code {
+  @apply bg-transparent p-0 text-slate-100;
+}
+
+.post-content img {
+  @apply rounded-2xl border border-slate-200 bg-white;
+}
+
+@layer components {
+  .post-content .code-block {
+    @apply overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 text-slate-100;
+  }
+
+  .post-content .code-block__header {
+    @apply flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-slate-200;
+  }
+
+  .post-content .code-block__filename {
+    @apply truncate text-slate-200;
+  }
+
+  .post-content .code-block__copy {
+    @apply inline-flex items-center rounded-md border border-slate-600 bg-slate-900/80 px-3 py-1 text-[11px] font-semibold text-slate-100 shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 normal-case tracking-normal;
+  }
+
+  .post-content .code-block__content {
+    @apply overflow-x-auto;
+  }
+
+  .post-content .code-block pre {
+    @apply bg-transparent p-4 text-sm leading-6;
+  }
+
+  .post-content .code-block code {
+    @apply bg-transparent text-slate-100;
+  }
 }
