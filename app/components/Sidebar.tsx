@@ -122,7 +122,7 @@ export default function Sidebar({
         </div>
       </section>
 
-      <section className="sticky top-24 mt-auto rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white shadow-lg">
+      <section className="sticky top-24 rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white shadow-lg">
         <p className="text-xs uppercase tracking-[0.2em] text-slate-200">
           Ad / Sponsored
         </p>

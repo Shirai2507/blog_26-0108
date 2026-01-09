@@ -34,6 +34,19 @@ const requiredFields: Array<keyof PostMeta> = [
   "slug",
 ];
 
+function comparePostMeta(a: PostMeta, b: PostMeta): number {
+  const timeA = new Date(a.date).getTime();
+  const timeB = new Date(b.date).getTime();
+  const safeA = Number.isNaN(timeA) ? 0 : timeA;
+  const safeB = Number.isNaN(timeB) ? 0 : timeB;
+
+  if (safeA !== safeB) {
+    return safeB - safeA;
+  }
+
+  return a.slug.localeCompare(b.slug);
+}
+
 function parseFrontmatter(fileContent: string, fileSlug: string): ParsedPost {
   const normalized = fileContent.replace(/\r\n/g, "\n");
   const emptyMeta: PostMeta = {
@@ -117,9 +130,7 @@ export function getAllPosts(): PostMeta[] {
     return meta;
   });
 
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
+  return posts.sort(comparePostMeta);
 }
 
 export function getAllPostsWithBodyText(): PostSearchItem[] {
@@ -149,9 +160,7 @@ export function getAllPostsWithBodyText(): PostSearchItem[] {
     };
   });
 
-  return posts.sort(
-    (a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime()
-  );
+  return posts.sort((a, b) => comparePostMeta(a.meta, b.meta));
 }
 
 export function getPostBySlug(slug: string): ParsedPost | null {
