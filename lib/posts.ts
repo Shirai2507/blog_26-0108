@@ -9,6 +9,11 @@ export type PostMeta = {
   slug: string;
 };
 
+export type CategoryCount = {
+  name: string;
+  count: number;
+};
+
 type ParsedPost = {
   meta: PostMeta;
   content: string;
@@ -127,6 +132,21 @@ export function getPostBySlug(slug: string): ParsedPost | null {
 
 export function getAllPostSlugs(): string[] {
   return getAllPosts().map((post) => post.slug);
+}
+
+export function getCategoryCounts(): CategoryCount[] {
+  const counts = new Map<string, number>();
+  for (const post of getAllPosts()) {
+    const category = post.category.trim();
+    if (!category) {
+      continue;
+    }
+    counts.set(category, (counts.get(category) ?? 0) + 1);
+  }
+
+  return Array.from(counts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 }
 
 export function formatDate(dateString: string): string {

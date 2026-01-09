@@ -1,7 +1,12 @@
 import { notFound } from "next/navigation";
 import PageLayout from "../../components/PageLayout";
 import { extractToc, markdownToHtml } from "../../../lib/markdown";
-import { formatDate, getAllPostSlugs, getPostBySlug } from "../../../lib/posts";
+import {
+  formatDate,
+  getAllPostSlugs,
+  getCategoryCounts,
+  getPostBySlug,
+} from "../../../lib/posts";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -22,9 +27,10 @@ export default async function PostDetailPage({ params }: PageProps) {
 
   const tocItems = extractToc(post.content);
   const html = await markdownToHtml(post.content);
+  const categories = getCategoryCounts();
 
   return (
-    <PageLayout tocItems={tocItems}>
+    <PageLayout tocItems={tocItems} categories={categories}>
       <article className="space-y-8">
         <header className="space-y-4">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">

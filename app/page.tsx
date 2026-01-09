@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { formatDate, getAllPosts } from "../lib/posts";
+import { formatDate, getAllPosts, getCategoryCounts } from "../lib/posts";
 import PageLayout from "./components/PageLayout";
 
 type HomeProps = {
@@ -24,6 +24,7 @@ function getPageNumber(value?: string): number {
 
 export default async function Home({ searchParams }: HomeProps) {
   const posts = getAllPosts();
+  const categories = getCategoryCounts();
   const resolvedParams = (await searchParams) ?? {};
   const categoryParam = getParamValue(resolvedParams.category);
   const filteredPosts = categoryParam
@@ -65,7 +66,11 @@ export default async function Home({ searchParams }: HomeProps) {
   };
 
   return (
-    <PageLayout>
+    <PageLayout
+      categories={categories}
+      activeCategory={categoryParam}
+      clearCategoryHref="/"
+    >
       <div className="space-y-10">
         <section className="space-y-4">
           <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
