@@ -62,7 +62,7 @@ export default function Sidebar({
             KN
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">Nishimura</p>
+            <p className="text-sm font-semibold text-slate-900">Shirai</p>
             <p className="text-xs text-slate-500">PHP / Next.js / UI</p>
           </div>
         </div>

@@ -6,6 +6,7 @@ import rehypeShiki from "@shikijs/rehype";
 import remarkGfm from "remark-gfm";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
+import rehypeRaw from "rehype-raw";
 import rehypeStringify from "rehype-stringify";
 import type { Code, Heading, Root as MdastRoot } from "mdast";
 import type { Element, Root as HastRoot } from "hast";
@@ -150,7 +151,8 @@ export async function markdownToHtml(markdown: string): Promise<string> {
     .use(remarkGfm)
     .use(remarkHeadingIds)
     .use(remarkCodeMeta)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(rehypeShiki, {
       theme: "github-dark",
       defaultLanguage: "text",
