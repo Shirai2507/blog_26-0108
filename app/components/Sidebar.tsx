@@ -72,8 +72,6 @@ export default function Sidebar({
         </p>
       </section>
 
-      <SidebarToc items={tocItems ?? []} />
-
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between gap-3">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
@@ -122,14 +120,18 @@ export default function Sidebar({
         </div>
       </section>
 
-      <section className="sticky top-24 rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white shadow-lg">
-        <p className="text-xs uppercase tracking-[0.2em] text-slate-200">
-          Ad / Sponsored
-        </p>
-        <p className="mt-4 text-sm leading-6 text-slate-100">
-          Placeholder for sponsorship notes and promos.
-        </p>
-      </section>
+      <div className="sticky top-6 flex flex-col gap-6">
+        <SidebarToc items={tocItems ?? []} />
+
+        <section className="rounded-2xl border border-slate-200 bg-slate-900 p-5 text-white shadow-lg">
+          <p className="text-xs uppercase tracking-[0.2em] text-slate-200">
+            Ad / Sponsored
+          </p>
+          <p className="mt-4 text-sm leading-6 text-slate-100">
+            Placeholder for sponsorship notes and promos.
+          </p>
+        </section>
+      </div>
     </aside>
   );
 }
