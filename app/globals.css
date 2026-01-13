@@ -161,19 +161,17 @@ html {
   }
 
   .post-content .code-block {
-    @apply overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 text-slate-100;
-  }
-
-  .post-content .code-block__header {
-    @apply flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.2em] text-slate-200;
-  }
-
-  .post-content .code-block__filename {
-    @apply truncate text-slate-200;
+    @apply relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900 text-slate-100;
   }
 
   .post-content .code-block__copy {
-    @apply inline-flex items-center rounded-md border border-slate-600 bg-slate-900/80 px-3 py-1 text-[11px] font-semibold text-slate-100 shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 normal-case tracking-normal;
+    @apply pointer-events-none absolute right-3 top-3 inline-flex items-center rounded-md border border-slate-600 bg-slate-900/80 px-[3px] py-[3px] text-[14px] font-semibold leading-none text-slate-100 opacity-0 shadow-sm transition hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 normal-case tracking-normal;
+  }
+
+
+  .post-content .code-block:hover .code-block__copy,
+  .post-content .code-block:focus-within .code-block__copy {
+    @apply pointer-events-auto opacity-100;
   }
 
   .post-content .code-block__content {

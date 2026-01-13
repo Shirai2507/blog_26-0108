@@ -73,29 +73,16 @@ function rehypeCodeBlocks() {
         return;
       }
 
-      const filename =
-        typeof node.properties?.["data-filename"] === "string"
-          ? (node.properties?.["data-filename"] as string)
-          : null;
-
-      const headerChildren: Element[] = [
-        {
-          type: "element",
-          tagName: "span",
-          properties: { className: ["code-block__filename"] },
-          children: [{ type: "text", value: filename ?? "Code" }],
+      const copyButton: Element = {
+        type: "element",
+        tagName: "button",
+        properties: {
+          type: "button",
+          className: ["code-block__copy"],
+          "data-code-copy": "true",
         },
-        {
-          type: "element",
-          tagName: "button",
-          properties: {
-            type: "button",
-            className: ["code-block__copy"],
-            "data-code-copy": "true",
-          },
-          children: [{ type: "text", value: "Copy" }],
-        },
-      ];
+        children: [{ type: "text", value: "Copy" }],
+      };
 
       const wrapper: Element = {
         type: "element",
@@ -105,12 +92,7 @@ function rehypeCodeBlocks() {
           "data-code-block": "true",
         },
         children: [
-          {
-            type: "element",
-            tagName: "div",
-            properties: { className: ["code-block__header"] },
-            children: headerChildren,
-          },
+          copyButton,
           {
             type: "element",
             tagName: "div",
